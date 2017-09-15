@@ -51,8 +51,14 @@ open class LocationPickerViewController: UIViewController {
     /// default: "Search History"
     public var searchHistoryLabel = "Search History"
     
+    /// default: false
+    public var activeSearchBarOnLoad = false
+    
     /// default: "Select"
     public var selectButtonTitle = "Select"
+    
+    /// default: false
+    public var autoSelectFromSearch = false
     
     lazy public var currentLocationButtonBackground: UIColor = {
         if let navigationBar = self.navigationController?.navigationBar,
@@ -83,6 +89,9 @@ open class LocationPickerViewController: UIViewController {
             if isViewLoaded {
                 searchBar.text = location.flatMap({ $0.title }) ?? ""
                 updateAnnotation()
+                if (autoSelectFromSearch) {
+                    selectLocation()
+                }
             }
         }
     }
@@ -127,7 +136,7 @@ open class LocationPickerViewController: UIViewController {
         localSearch?.cancel()
         geocoder.cancelGeocode()
         // http://stackoverflow.com/questions/32675001/uisearchcontroller-warning-attempting-to-load-the-view-of-a-view-controller/
-//        let _ = searchController.view
+        //        let _ = searchController.view
     }
     
     open override func loadView() {
@@ -167,6 +176,11 @@ open class LocationPickerViewController: UIViewController {
         mapView.delegate = self
         searchBar.delegate = self
         
+        if activeSearchBarOnLoad {
+            self.perform(#selector(selectSearchBar), with: nil, afterDelay: 1)
+        }
+        searchBar.becomeFirstResponder()
+        
         // gesture recognizer for adding by tap
         let locationSelectGesture = UILongPressGestureRecognizer(
             target: self, action: #selector(addLocation(_:)))
@@ -184,6 +198,10 @@ open class LocationPickerViewController: UIViewController {
         if useCurrentLocationAsHint {
             getCurrentLocation()
         }
+    }
+    
+    func selectSearchBar() {
+        searchBar.becomeFirstResponder()
     }
     
     open override var preferredStatusBarStyle : UIStatusBarStyle {
@@ -317,6 +335,8 @@ extension LocationPickerViewController: UISearchResultsUpdating {
             self.showCoordinates(location.coordinate)
             
             self.historyManager.addToHistory(location)
+            
+            
         }
     }
 }
@@ -387,6 +407,10 @@ extension LocationPickerViewController: MKMapViewDelegate {
     }
     
     public func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        selectLocation()
+    }
+    
+    public func selectLocation() {
         completion?(location)
         if let navigation = navigationController, navigation.viewControllers.count > 1 {
             navigation.popViewController(animated: true)
