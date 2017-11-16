@@ -200,7 +200,7 @@ open class LocationPickerViewController: UIViewController {
         }
     }
     
-    func selectSearchBar() {
+    @objc func selectSearchBar() {
         searchBar.becomeFirstResponder()
     }
     
@@ -241,7 +241,7 @@ open class LocationPickerViewController: UIViewController {
         locationManager.startUpdatingLocation()
     }
     
-    func currentLocationPressed() {
+    @objc func currentLocationPressed() {
         showCurrentLocation()
     }
     
@@ -301,7 +301,7 @@ extension LocationPickerViewController: UISearchResultsUpdating {
         }
     }
     
-    func searchFromTimer(_ timer: Timer) {
+    @objc func searchFromTimer(_ timer: Timer) {
         guard let userInfo = timer.userInfo as? [String: AnyObject],
             let term = userInfo[LocationPickerViewController.SearchTermKey] as? String
             else { return }
@@ -344,7 +344,7 @@ extension LocationPickerViewController: UISearchResultsUpdating {
 // MARK: Selecting location with gesture
 
 extension LocationPickerViewController {
-    func addLocation(_ gestureRecognizer: UIGestureRecognizer) {
+    @objc func addLocation(_ gestureRecognizer: UIGestureRecognizer) {
         if gestureRecognizer.state == .began {
             let point = gestureRecognizer.location(in: mapView)
             let coordinates = mapView.convert(point, toCoordinateFrom: mapView)
