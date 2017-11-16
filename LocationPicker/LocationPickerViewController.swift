@@ -215,7 +215,7 @@ open class LocationPickerViewController: UIViewController {
         if let button = locationButton {
             button.frame.origin = CGPoint(
                 x: view.frame.width - button.frame.width - 16,
-                y: view.frame.height - button.frame.height - 20
+                y: view.frame.height - button.frame.height - 34
             )
         }
         
